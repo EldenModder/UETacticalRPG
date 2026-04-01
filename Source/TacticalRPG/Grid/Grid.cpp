@@ -1,14 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Grid.h"
-
-#include <string>
-
 #include "Components/InstancedStaticMeshComponent.h"
-#include "../Public/BPFL_Utils.h"
-
-
 
 // Sets default values
 AGrid::AGrid()
@@ -45,7 +38,6 @@ void AGrid::OnConstruction(const FTransform& Transform)
 	ISM->SetMaterial(0, GridMaterial);
 	ISM->NumCustomDataFloats = 3;
 	ISM->OnClicked.AddDynamic(this, &AGrid::SetGridCellColorOnClick);
-	ISM->OnClicked.AddDynamic(this, &AGrid::SpawnUnitOnCell);
 	ISM->OnReleased.AddDynamic(this, &AGrid::SetGridCellColorBack);
 	for (int i = 0; i < width; ++i)
 	{
@@ -62,10 +54,6 @@ void AGrid::OnConstruction(const FTransform& Transform)
 	}
 }
 
-void AGrid::SetUnitToSpawn(AUnit* Unit)
-{
-	SelectedUnitClass = Unit->GetClass();
-}
 
 FIntPoint AGrid::GetGridPosition(AUnit* Unit)
 {
@@ -92,51 +80,5 @@ void AGrid::SetGridCellColorBack(UPrimitiveComponent* ClickedComponent, FKey But
 	SetGridCellColor(Hit.Item, 1.f, 1.f, 1.f);
 }
 
-void AGrid::SpawnUnitOnCell(UPrimitiveComponent* ClickedComponent, FKey ButtonPressed)
-{
-	if (Hit.Component == ClickedComponent)
-	{
-		int32 index = Hit.Item;
-		FIntPoint GridCoord = GridIndexMap[index];
-		HandleTileClicked(GridCoord);
-	}
-}
-
-void AGrid::SpawnUnitAt(FIntPoint Coord)
-{
-	if (bCanSpawnUnit == false) return;
-	if (OccupiedTiles.Contains(Coord) || !SelectedUnitClass)
-	{
-		return;
-	}
-	if (NumberOfUnitToSpawn <= 0)
-	{
-		bCanSpawnUnit = false; 
-		return;
-	}
-	int32* indexPtr = GridCoordToIndex.Find(Coord);
-	if (!indexPtr) return;
-	
-	int32 index = *indexPtr;
-	
-	FTransform instanceTransform;
-	ISM->GetInstanceTransform(index, instanceTransform, true);
-	
-	FVector WorldPos = instanceTransform.GetLocation() + FVector(0,0,100.f);
-	
-	AUnit* Unit = GetWorld()->SpawnActor<AUnit>(
-		SelectedUnitClass,
-		WorldPos,
-		FRotator::ZeroRotator
-	);
-	Unit->UnitPosition = Coord;
-	OccupiedTiles.Emplace(Coord, Unit);
-	NumberOfUnitToSpawn--;
-}
-
-void AGrid::HandleTileClicked(FIntPoint Coord)
-{
-	SpawnUnitAt(Coord);
-}
 
 

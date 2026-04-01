@@ -3,40 +3,53 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
-#include "PathNode.generated.h"
 
-/**
- * 
- */
 
-UCLASS()
-class TACTICALRPG_API UPathNode : public UObject
+struct FPathNode
 {
-	GENERATED_BODY()
-	
 private:
 	FIntPoint GridPosition;
-	int32 gCost, hCost, fCost;
-	UPROPERTY()
-	UPathNode* CameFrom;
-	bool bIsWalkable;
-	
+	int32 gCost = 0;
+	int32 hCost = 0;
+	int32 fCost = 0;
+
+	FPathNode* CameFrom = nullptr;
+	bool bIsWalkable = true;
+
 public:
-	UPathNode(FIntPoint GridPosition) { this->GridPosition = GridPosition; }
-	FString ToString() const { return GridPosition.ToString(); }
-	
-	int32 GetCost() const { return gCost; }
+	FPathNode() = default;
+
+	FPathNode(const FIntPoint& InGridPosition)
+		: GridPosition(InGridPosition)
+	{
+	}
+
+	FString ToString() const
+	{
+		return GridPosition.ToString();
+	}
+
+	// Getters
+	int32 GetGCost() const { return gCost; }
 	int32 GetHCost() const { return hCost; }
 	int32 GetFCost() const { return fCost; }
-	bool IsWalkable() const { return bIsWalkable; }
 	FIntPoint GetGridPosition() const { return GridPosition; }
-	UPathNode* GetCameFrom() const { return CameFrom; }
-	
-	void SetGCost(int32 gCost) { this->gCost = gCost; }
-	void SetHCost(int32 hCost) { this->hCost = hCost; }
-	void SetCameFrom(UPathNode* CameFrom) { this->CameFrom = CameFrom; }
-	bool SetIsWalkable(bool IsWalkable) { return this->bIsWalkable = IsWalkable; };
-	void CalculateFCost() { fCost = gCost + hCost; };
-	void ResetCameFrom() { CameFrom = nullptr; }
+	FPathNode* GetCameFrom() const { return CameFrom; }
+	bool IsWalkable() const { return bIsWalkable; }
+
+	// Setters
+	void SetGCost(int32 InGCost) { gCost = InGCost; }
+	void SetHCost(int32 InHCost) { hCost = InHCost; }
+	void SetCameFrom(FPathNode* InNode) { CameFrom = InNode; }
+	void SetIsWalkable(bool bWalkable) { bIsWalkable = bWalkable; }
+
+	void CalculateFCost()
+	{
+		fCost = gCost + hCost;
+	}
+
+	void ResetCameFrom()
+	{
+		CameFrom = nullptr;
+	}
 };

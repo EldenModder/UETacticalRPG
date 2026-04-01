@@ -33,38 +33,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	float cellSize;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	bool bCanSpawnUnit = true;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	UStaticMesh* GridMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	UMaterial* GridMaterial;
-//-----------------------------------------------------------------------------	
-	UFUNCTION(BlueprintCallable, Category = "Grid")
-	void SetUnitToSpawn(AUnit* Unit);
-	UFUNCTION(Category="Grid")
-	FIntPoint GetGridPosition(AUnit* Unit);
+	UPROPERTY(BlueprintReadOnly)
+	FHitResult Hit;
 	
-protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Grid")
 	UInstancedStaticMeshComponent* ISM;
 	UPROPERTY()
 	APlayerController* PC;
 	UPROPERTY()
 	USceneComponent* Root;
-	UPROPERTY(BlueprintReadOnly)
-	FHitResult Hit;
-	UPROPERTY(BlueprintReadWrite, Category = "Unit")
-	TSubclassOf<AUnit> SelectedUnitClass;
-
-private:
-	UPROPERTY()
-	int NumberOfUnitToSpawn = 1;
+	
 	UPROPERTY()
 	TMap<int32, FIntPoint> GridIndexMap;
 	UPROPERTY()
 	TMap<FIntPoint, int32> GridCoordToIndex;
 	UPROPERTY()
 	TMap<FIntPoint, AUnit*> OccupiedTiles;
+	
+//-----------------------------------------------------------------------------	
+	UFUNCTION(Category="Grid")
+	FIntPoint GetGridPosition(AUnit* Unit);
 	
 private:
 	UFUNCTION()
@@ -73,11 +64,6 @@ private:
 	void SetGridCellColorOnClick(UPrimitiveComponent* ClickedComponent, FKey ButtonPressed);
 	UFUNCTION()
 	void SetGridCellColorBack(UPrimitiveComponent* ClickedComponent, FKey ButtonPressed);
-	UFUNCTION()
-	void SpawnUnitOnCell(UPrimitiveComponent* ClickedComponent, FKey ButtonPressed);
-	UFUNCTION()
-	void SpawnUnitAt(FIntPoint Coord);
-	UFUNCTION()
-	void HandleTileClicked(FIntPoint Coord);
+	
 	
 };
